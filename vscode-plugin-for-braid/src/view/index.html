@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>index</title>
+    <link rel="stylesheet" type="text/css" href="../../lib/styles/iview.css">
+    <script type="text/javascript" src="../../lib/vue.min.js"></script>
+    <script type="text/javascript" src="../../lib/iview.min.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <tabs :value="cur">
+            <tab-pane label="CSR" name="CSR" style="height: 94.3vh">
+                <iframe src="csrecommendation.html" frameborder="0" height="100%" width="100%" style="background-color: rgb(30, 30, 30)"></iframe>
+            </tab-pane>
+            <tab-pane label="ASR" name="ASR">
+                <iframe src="apiRecommendation.html" frameborder="0" height="100%" width="100%"></iframe>
+            </tab-pane>
+            <tab-pane label="Demo" name="Demo">
+                <iframe src="query.html" frameborder="0" height="100%" width="100%"></iframe>
+            </tab-pane>
+            <tab-pane label="About" name="About" style="height:800px;">
+                <iframe src="about.html" frameborder="0" height="800px" width="100%"></iframe>
+            </tab-pane>
+        </tabs>
+    </div>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                cur: '0.0',
+                tabs: 2
+            }
+        });
+    </script>
+</body>
+
+</html>

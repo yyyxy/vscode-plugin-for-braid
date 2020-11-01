@@ -1,0 +1,59 @@
+
+      /* html,body{height:100%;overflow:hidden;}
+      body,div,ul,li{margin:0;padding:0;} */
+      body{font:12px/1.5 \5fae\8f6f\96c5\9ed1;}
+      ul{list-style-type:none;}
+      #rightMenu{position:absolute;top:-9999px;left:-9999px;}
+      #rightMenu ul{float:left;border:1px solid #979797;background:#f1f1f1 url(images/line.png) 24px 0 repeat-y;padding:2px;box-shadow:2px 2px 2px rgba(0,0,0,.6);}
+      #rightMenu ul li{float:left;clear:both;height:24px;cursor:pointer;line-height:24px;white-space:nowrap;padding:0 30px;}
+      #rightMenu ul li.sub{background-repeat:no-repeat;background-position:right 9px;background-image:url(images/arrow_win7.png);}
+      #rightMenu ul li.active{background-color:#f1f3f6;border-radius:3px;border:1px solid #aecff7;height:22px;line-height:22px;background-position:right -8px;padding:0 29px;}
+      #rightMenu ul ul{display:none;position:absolute;}
+
+      .shade{
+        width:100%;
+        height: 100%;
+        /* position: absolute; */
+        top: 0px;
+        left: 0px;
+        
+      }
+      .wrap-ms-right{
+        list-style: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 9999;
+        padding: 5px 0;
+        min-width: 80px;
+        margin: 0;
+        display: none;
+        font-family: "微软雅黑";
+        font-size: 14px;
+        background-color: rgb(235,235,233);
+        border: 1px solid rgba(0, 0, 0, .15);
+        box-sizing: border-box;
+        border-radius: 4px;
+        -webkit-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        -moz-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        -ms-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        -o-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+      .ms-item{
+        height: 30px;
+        line-height: 30px;
+        text-align: center;
+        cursor: pointer;
+        background-color: rgb(235,235,233);
+      }
+      .ms-item:hover{
+        background-color:rgb(232,231,227);
+        color: #FFFFFF;
+      }
+      .m{width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+      }
+
+      

@@ -1,0 +1,56 @@
+{
+  "_from": "rightmenu",
+  "_id": "rightmenu@1.1.0",
+  "_inBundle": false,
+  "_integrity": "sha1-8RgYkQ+L2sjKWA7I/Mjj24LHIJ0=",
+  "_location": "/rightmenu",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "rightmenu",
+    "name": "rightmenu",
+    "escapedName": "rightmenu",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#DEV:/",
+    "#USER"
+  ],
+  "_resolved": "https://registry.npm.taobao.org/rightmenu/download/rightmenu-1.1.0.tgz",
+  "_shasum": "f11818910f8bdac8ca580ec8fcc8e3db82c7209d",
+  "_spec": "rightmenu",
+  "_where": "D:\\code\\html\\vue",
+  "author": {
+    "name": "jinzhenzong"
+  },
+  "bugs": {
+    "url": "https://github.com/JinZhenZon/rightmenu/issues"
+  },
+  "bundleDependencies": false,
+  "deprecated": false,
+  "description": "Right click menu",
+  "homepage": "https://github.com/JinZhenZon/rightmenu#readme",
+  "keywords": [
+    "right",
+    "click",
+    "menu"
+  ],
+  "license": "ISC",
+  "main": "index.js",
+  "name": "rightmenu",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JinZhenZon/rightmenu.git"
+  },
+  "scripts": {
+    "test": "test"
+  },
+  "version": "1.1.0",
+  "dependencies": {
+    "@xunlei/vue-context-menu": "^1.0.2",
+    "vue-contextmenu": "^1.5.9"
+  }
+}

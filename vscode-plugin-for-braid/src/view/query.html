@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <!-- import Vue.js -->
+    <script src="../../lib/vue.min.js"></script>
+    <!-- import stylesheet -->
+    <link rel="stylesheet" href="../../lib/styles/iview.css">
+    <!-- import iView -->
+    <script src="../../lib/iview.min.js"></script>
+    <!-- import jquery -->
+    <script src="../../lib/jquery-3.4.1.min.js"></script>
+    <!-- import highlight -->
+    <script src="../../lib/highlight.pack.js"></script>
+    <!-- import dark.css -->
+    <link rel="stylesheet" href="../../lib/styles/dark.css">
+    <!-- 引入 VContextmenu 组件 -->
+    <script src="../../lib/contextmenu.js"></script>
+    <!-- 引入 VContextmenu 组件样式 -->
+    <link rel="stylesheet" href="../../lib/contextmenu.css">
+    <style>
+        .paging {
+            margin: auto;
+            margin-top: 10px;
+        }
+        
+        #app {
+            margin-top: 25px;
+            text-align: center;
+        }
+        
+        #app2 {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        #page {
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        
+        .codeBox {
+            width: 80%;
+            height: 30%;
+            margin: 5px auto;
+            padding: 5px;
+            flex: 2.5;
+        }
+        .codeBox:hover {
+            background-color: burlywood;
+        }
+    </style>
+</head>
+
+<!-- <body style="background-color: rgb(30, 30, 30); height: 100%;"> -->
+<body>    
+    <!-- 顶部搜索框 -->
+    <!-- <div id='app2'>
+        <i-input search enter-button placeholder="Enter something..." style="width: 40%; margin: auto" @on-search="search" @on-enter="search" v-if="display" />
+    </div> -->
+    <div id="app">
+        <div id='app2'>
+            <i-input search enter-button placeholder="Enter something..." style="width: 40%; margin: auto" @on-search="search" @on-enter="search" v-if="searchbar_display" />
+        </div>
+        <v-contextmenu ref="contextmenu">
+            <!-- <v-contextmenu-item @click='newFile'>新建</v-contextmenu-item>
+            <v-contextmenu-item @click='copy'>复制</v-contextmenu-item>
+            <v-contextmenu-item @click='analysis'>分析</v-contextmenu-item> -->
+            <v-contextmenu-item @click='toFeedback'>反馈</v-contextmenu-item>
+        </v-contextmenu>
+        <!--分页/代码框-->
+        <div v-contextmenu:contextmenu>
+            <div v-for="item in build(codeData)" :key="item.id" class='codeBox'  @click="toggle(item)">
+                <div v-for="item in build(codeData)" :key="item.id" class='codeBox'  @click="toggle(item)">
+                    <div style="text-align: left;color: black;font-weight:bold;font-size: 25px;">API: {{ item.api }}</div>
+                    <!-- <div>
+                         <pre>
+                            <code v-text="item.desc" style="height: 36px;color: black;"></code>
+                        </pre> 
+                    </div> -->
+                    <div v-text="item.desc" style="text-align: left;color: rgb(82, 80, 80);font-weight:bold; font-size: 22px;"></div>
+                    <!-- {{ item.content }} -->
+                </div>
+            </div>
+        </div>
+        <div id='page'>
+            <Page :total="dataCount" 
+            show-total 
+            show-sizer 
+            :page-size="pageSize" 
+            :current="current"
+            class="paging" 
+            @on-change="changepage"
+            @on-page-size-change="pageSizeChanged"></Page>
+        </div>
+
+        <div id='app3' style="bottom: 40%; right: 5px; position: fixed">
+            <i-menu theme="dark" active-name="1" style="width: 66px; height: 150px;" @on-select="show">
+                <Menu-Item name="1">
+                    <Icon type="ios-arrow-up" />
+                </Menu-Item>
+                <Menu-Item name="2">
+                    <Icon type="ios-arrow-down" />
+                </Menu-Item>
+                <Menu-Item name="3">
+                    <Icon type="ios-search" />
+                </Menu-Item>
+            </i-menu>
+        </div>
+    </div>
+    
+
+    <!-- 右侧工具栏 -->
+    
+    <script>
+        const testMode = false; // 为true时可以在浏览器打开不报错
+        // vscode webview 网页和普通网页的唯一区别：多了一个acquireVsCodeApi方法
+        const vscode = testMode ? {} : acquireVsCodeApi();
+        const callbacks = {};
+
+        /**
+         * 调用vscode原生api
+         * @param data 可以是类似 {cmd: 'xxx', param1: 'xxx'}，也可以直接是 cmd 字符串
+         * @param cb 可选的回调函数
+         */
+        function callVscode(data, cb) {
+            if (typeof data === 'string') {
+                data = { cmd: data };
+            }
+            if (cb) {
+                // 时间戳加上5位随机数
+                const cbid = Date.now() + '' + Math.round(Math.random() * 100000);
+                callbacks[cbid] = cb;
+                data.cbid = cbid;
+            }
+            vscode.postMessage(data);
+        }
+
+        // Vue.directive('highlight', function(el) {
+        //     let blocks = el.querySelectorAll('pre code');
+        //     blocks.forEach((block) => {
+        //         hljs.highlightBlock(block);
+        //     })
+        // })
+
+        window.addEventListener('message',event => {
+            const message = event.data;
+            console.log('event.data =>' , JSON.stringify(message));
+            $.ajax({
+                dataType:'json',
+                url:"http://127.0.0.1:5000/query/" + message,
+                success:function(result){
+                    console.log('query result');
+                    console.log(result);
+                    vm.socketData = result;
+                    vm.handleData();
+                }
+            })
+        });
+
+        // let testData = {
+        //     codeRecommedation: [{
+        //         id: 1,
+        //         api: "c++",
+        //         desc: '#include<iostream>\\nint main(){\\ncout<<"hello world";\\nreturn 0;}'
+        //     }, {
+        //         id: 2,
+        //         api: "python",
+        //         desc: "print('hello world')"
+        //     }, {
+        //         id: 3,
+        //         api: "css",
+        //         desc: "width:'100px'"
+        //     }, {
+        //         id: 4,
+        //         api: "html",
+        //         desc: " &lt;div&gt;&lt;/div&gt;"
+        //     }, {
+        //         id: 5,
+        //         api: "c++",
+        //         desc: '#include<iostream>\\nint main(){\\ncout<<"hello world";\\nreturn 0;}'
+        //     }, {
+        //         id: 6,
+        //         api: "python",
+        //         desc: "print('hello world')"
+        //     }, {
+        //         id: 7,
+        //         api: "javascript",
+        //         desc: "console.log('hello world')"
+        //     }, {
+        //         id: 8,
+        //         api: "javascript",
+        //         desc: "console.log('hello world')"
+        //     },
+        //     {
+        //         id: 9,
+        //         api: "javascript",
+        //         desc: "typeof 123"
+        //     },
+        //     {
+        //         id: 10,
+        //         api: "javascript",
+        //         desc: "typeof 123"
+        //     },
+        //     {
+        //         id: 11,
+        //         api: "javascript",
+        //         desc: "typeof 123"
+        //     },
+        //     {
+        //         id: 12,
+        //         api: "javascript",
+        //         desc: "typeof 123"
+        //     }
+        // ]
+        // };
+        let testData = {
+            codeRecommedation: []
+        };
+
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                dataCount: 0,
+                pageSize: 10,
+                codeData: [],
+                socketData: [],
+                cur_index: 0,
+                searchbar_display: false,
+                ws: undefined,
+                current: 1
+            },
+            methods: {
+                handleData() {
+                    this.cur_index = 1;
+                    this.dataCount = this.socketData.length;
+                    if (this.socketData.length < this.pageSize) {
+                        this.codeData = this.socketData;
+                    }
+                    else {
+                        this.codeData = this.socketData.slice(0, this.pageSize);
+                    }
+                },
+                changepage(index) {
+                    console.log("index", index)
+                    console.log("current",this.current)
+                    this.cur_index = index;
+                    this.current = index;
+                    var _start = (index - 1) * this.pageSize;
+                    var _end = index * this.pageSize;
+                    console.log(_start, _end);
+                    this.codeData = this.socketData.slice(_start, _end);
+                },
+                build(codeData) {
+                    return codeData;
+                },
+                newFile() {
+                    console.log('this is new');
+                },
+                copy() {
+                    console.log('this is copy');
+                },
+                analysis() {
+                    console.log('this is analysis');
+                },
+                search() {
+                    console.log("click search")
+                    // if(!this.ws){
+                    //     this.ws = new WebSocket('ws://localhost:8765');
+                    //     let that = this;
+                    //     this.ws.onopen = function(e){
+                            
+                    //         console.log("连接服务器成功");
+                    //         let message = "how to convert int to string?";
+                    //         that.ws.send("how to convert int to string?");
+                    //         console.log("查询中：" + message);
+                    //     }
+                    //     this.ws.onclose = function(e){
+                    //         console.log("服务器关闭");
+                    //     }
+                    //     this.ws.onerror = function(){
+                    //         console.log("连接出错");
+                    //     }
+                    //     this.ws.onmessage = function(e){
+                    //         console.log(typeof e)
+                    //         console.log(e.data);
+                    //         let d = JSON.parse(e.data);
+                            
+                    //         // vm.socketData = JSON.parse(e.data);
+                            
+                    //         // vm.handleData()
+                    //         //var codes = e.data.parseJSON();
+                    //     }
+                    // }else{
+                    //     message = "how to convert int to string"
+                    //     this.ws.send("how to convert int to string");
+                    //     console.log("查询中：" + message);
+                    // }
+                },
+                show(name) {
+                    if (name == '3') {
+                        this.searchbar_display = !this.searchbar_display;
+                    }
+                    else if (name == '2') {
+                        if (this.cur_index + 1 <= ((this.dataCount - 1) / this.pageSize) + 1) {
+                            this.cur_index = this.cur_index + 1;
+                            this.changepage(this.cur_index);
+                        }
+                    } else if (name == '1') {
+                        if (this.cur_index - 1 >= 1) {
+                            this.cur_index = this.cur_index - 1;
+                            this.changepage(this.cur_index);
+                        }
+                    }
+                },
+                toggle(item) {
+                    console.log('feedback item');
+                    console.log(item);
+                    console.log(item['id']);
+                    this.$Modal.confirm({
+                        title: "反馈提示",
+                        content: "您反馈的API是 "+ item['api'] +", 是否确定反馈?",
+                        okText:'保存',
+                        cancelText: "取消",
+                        onOk: () => {
+                            $.ajax({
+                                dataType:'json',
+                                url:"http://127.0.0.1:5000/feedback/" + item['id'],
+                                success:function(result){
+                                    console.log('feedback result');
+                                    console.log(typeof result);
+                                    console.log(result); 
+                                    var message = {cmd:"alert", info:"反馈成功"};
+                                    vscode.postMessage(message);
+                                }
+                            });
+                        },
+                    })
+                },
+                pageSizeChanged(_pageSize) {
+                    this.pageSize = _pageSize;
+                    this.handleData();
+                },
+                toFeedback(vm,event) {
+                    console.log(vm)
+                    console.log(event)
+                }
+            },
+            created() {
+                //this.handleData();
+                console.log("created() method is called.")
+                // window.addEventListener('message',function(event) {
+                //     const message = event.data;
+                //     console.log('event.data =>' , event.data);
+                // });
+                this.cur_index = 1;
+                this.socketData = testData.codeRecommedation;
+                this.dataCount = testData.codeRecommedation.length;
+                if (this.socketData.length < this.pageSize)
+                    this.codeData = this.socketData;
+                else
+                    this.codeData = this.socketData.slice(0, this.pageSize);
+            }
+        });
+    </script>
+</body>
+</html>
