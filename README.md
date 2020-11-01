@@ -6,9 +6,9 @@ A vscode plugin for braid.
 
 
 
-step1. git clone https://github.com/yyyxy/vscode-plugin-for-braid.git . then `cd vscode-plugin-for-braid`
+step1. run command `git clone https://github.com/yyyxy/vscode-plugin-for-braid.git` . then run command `cd vscode-plugin-for-braid`
 
-step2. change directionary to biker/braid, using command `cd biker/braid` 
+step2. change directory to `biker/braid`, using command `cd biker/braid` 
 
 step3. install the required libraries , using command `pip install -r requirements.txt`
 
