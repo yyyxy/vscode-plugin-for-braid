@@ -12,7 +12,7 @@ step2. change directory to `biker/braid`, using command `cd biker/braid`
 
 step3. install the required libraries , using command `pip install -r requirements.txt`
 
-step4. start backend server, using command `python server.py`
+step4. start backend server, using command `python server.py`. it is required to run this project with python3 version.
 
 ![run-server](./assets/images/01-run-server.png)
 
