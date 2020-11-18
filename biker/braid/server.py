@@ -316,4 +316,3 @@ def query(choose):
     return jsonify(feedback_rec_func(int(choose))),200,[('Access-Control-Allow-Origin','*')]
 
 app.run()
-print('flask 开启成功')
