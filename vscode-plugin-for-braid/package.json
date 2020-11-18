@@ -1,7 +1,7 @@
 {
-	"name": "vscode-plugin-test",
-	"displayName": "vscode-plugin-test",
-	"description": "代码推荐",
+	"name": "vscode-plugin-for-braid",
+	"displayName": "vscode-plugin-for-braid",
+	"description": "code recommendation",
 	"version": "0.0.1",
 	"engines": {
 		"vscode": "^1.30.0"
@@ -58,14 +58,6 @@
 				}
 			],
 			"explorer/context": [
-				{
-					"command": "extension.cswebview",
-					"group": "navigation"
-				},
-				{
-					"command": "extension.apiwebview",
-					"group": "navigation"
-				}
 			]
 		}
 	},

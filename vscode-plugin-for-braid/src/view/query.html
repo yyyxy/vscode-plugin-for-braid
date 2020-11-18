@@ -46,8 +46,8 @@
         .codeBox {
             width: 80%;
             height: 30%;
-            margin: 5px auto;
-            padding: 5px;
+            margin: 10px auto;
+            padding: 10px;
             flex: 2.5;
         }
         .codeBox:hover {
@@ -56,65 +56,25 @@
     </style>
 </head>
 
-<!-- <body style="background-color: rgb(30, 30, 30); height: 100%;"> -->
 <body>    
-    <!-- 顶部搜索框 -->
-    <!-- <div id='app2'>
-        <i-input search enter-button placeholder="Enter something..." style="width: 40%; margin: auto" @on-search="search" @on-enter="search" v-if="display" />
-    </div> -->
     <div id="app">
-        <div id='app2'>
-            <i-input search enter-button placeholder="Enter something..." style="width: 40%; margin: auto" @on-search="search" @on-enter="search" v-if="searchbar_display" />
+        <div id="loading" v-if="show_loading" style="color: black;font-size: medium;">
+            The query is being processed. Please wait for seconds...
         </div>
-        <v-contextmenu ref="contextmenu">
-            <!-- <v-contextmenu-item @click='newFile'>新建</v-contextmenu-item>
-            <v-contextmenu-item @click='copy'>复制</v-contextmenu-item>
-            <v-contextmenu-item @click='analysis'>分析</v-contextmenu-item> -->
-            <v-contextmenu-item @click='toFeedback'>反馈</v-contextmenu-item>
-        </v-contextmenu>
-        <!--分页/代码框-->
-        <div v-contextmenu:contextmenu>
+        <!--recommendation list-->
+        <div>
             <div v-for="item in build(codeData)" :key="item.id" class='codeBox'  @click="toggle(item)">
-                <div v-for="item in build(codeData)" :key="item.id" class='codeBox'  @click="toggle(item)">
-                    <div style="text-align: left;color: black;font-weight:bold;font-size: 25px;">API: {{ item.api }}</div>
-                    <!-- <div>
-                         <pre>
-                            <code v-text="item.desc" style="height: 36px;color: black;"></code>
-                        </pre> 
-                    </div> -->
-                    <div v-text="item.desc" style="text-align: left;color: rgb(82, 80, 80);font-weight:bold; font-size: 22px;"></div>
-                    <!-- {{ item.content }} -->
-                </div>
+                <div style="text-align: left;color: black;font-size: large;">API: {{ item.api }}</div>
+                <!-- <div>
+                     <pre>
+                        <code v-text="item.desc" style="height: 36px;color: black;"></code>
+                    </pre> 
+                </div> -->
+                <div v-text="item.desc" style="color: black;font-size: medium;"></div>
+                <!-- {{ item.content }} -->
             </div>
         </div>
-        <div id='page'>
-            <Page :total="dataCount" 
-            show-total 
-            show-sizer 
-            :page-size="pageSize" 
-            :current="current"
-            class="paging" 
-            @on-change="changepage"
-            @on-page-size-change="pageSizeChanged"></Page>
-        </div>
-
-        <div id='app3' style="bottom: 40%; right: 5px; position: fixed">
-            <i-menu theme="dark" active-name="1" style="width: 66px; height: 150px;" @on-select="show">
-                <Menu-Item name="1">
-                    <Icon type="ios-arrow-up" />
-                </Menu-Item>
-                <Menu-Item name="2">
-                    <Icon type="ios-arrow-down" />
-                </Menu-Item>
-                <Menu-Item name="3">
-                    <Icon type="ios-search" />
-                </Menu-Item>
-            </i-menu>
-        </div>
     </div>
-    
-
-    <!-- 右侧工具栏 -->
     
     <script>
         const testMode = false; // 为true时可以在浏览器打开不报错
@@ -157,67 +117,12 @@
                     console.log('query result');
                     console.log(result);
                     vm.socketData = result;
+                    vm.show_loading = false;
                     vm.handleData();
                 }
             })
         });
 
-        // let testData = {
-        //     codeRecommedation: [{
-        //         id: 1,
-        //         api: "c++",
-        //         desc: '#include<iostream>\\nint main(){\\ncout<<"hello world";\\nreturn 0;}'
-        //     }, {
-        //         id: 2,
-        //         api: "python",
-        //         desc: "print('hello world')"
-        //     }, {
-        //         id: 3,
-        //         api: "css",
-        //         desc: "width:'100px'"
-        //     }, {
-        //         id: 4,
-        //         api: "html",
-        //         desc: " &lt;div&gt;&lt;/div&gt;"
-        //     }, {
-        //         id: 5,
-        //         api: "c++",
-        //         desc: '#include<iostream>\\nint main(){\\ncout<<"hello world";\\nreturn 0;}'
-        //     }, {
-        //         id: 6,
-        //         api: "python",
-        //         desc: "print('hello world')"
-        //     }, {
-        //         id: 7,
-        //         api: "javascript",
-        //         desc: "console.log('hello world')"
-        //     }, {
-        //         id: 8,
-        //         api: "javascript",
-        //         desc: "console.log('hello world')"
-        //     },
-        //     {
-        //         id: 9,
-        //         api: "javascript",
-        //         desc: "typeof 123"
-        //     },
-        //     {
-        //         id: 10,
-        //         api: "javascript",
-        //         desc: "typeof 123"
-        //     },
-        //     {
-        //         id: 11,
-        //         api: "javascript",
-        //         desc: "typeof 123"
-        //     },
-        //     {
-        //         id: 12,
-        //         api: "javascript",
-        //         desc: "typeof 123"
-        //     }
-        // ]
-        // };
         let testData = {
             codeRecommedation: []
         };
@@ -232,7 +137,8 @@
                 cur_index: 0,
                 searchbar_display: false,
                 ws: undefined,
-                current: 1
+                current: 1,
+                show_loading: true
             },
             methods: {
                 handleData() {
@@ -269,37 +175,6 @@
                 },
                 search() {
                     console.log("click search")
-                    // if(!this.ws){
-                    //     this.ws = new WebSocket('ws://localhost:8765');
-                    //     let that = this;
-                    //     this.ws.onopen = function(e){
-                            
-                    //         console.log("连接服务器成功");
-                    //         let message = "how to convert int to string?";
-                    //         that.ws.send("how to convert int to string?");
-                    //         console.log("查询中：" + message);
-                    //     }
-                    //     this.ws.onclose = function(e){
-                    //         console.log("服务器关闭");
-                    //     }
-                    //     this.ws.onerror = function(){
-                    //         console.log("连接出错");
-                    //     }
-                    //     this.ws.onmessage = function(e){
-                    //         console.log(typeof e)
-                    //         console.log(e.data);
-                    //         let d = JSON.parse(e.data);
-                            
-                    //         // vm.socketData = JSON.parse(e.data);
-                            
-                    //         // vm.handleData()
-                    //         //var codes = e.data.parseJSON();
-                    //     }
-                    // }else{
-                    //     message = "how to convert int to string"
-                    //     this.ws.send("how to convert int to string");
-                    //     console.log("查询中：" + message);
-                    // }
                 },
                 show(name) {
                     if (name == '3') {
@@ -322,10 +197,10 @@
                     console.log(item);
                     console.log(item['id']);
                     this.$Modal.confirm({
-                        title: "反馈提示",
-                        content: "您反馈的API是 "+ item['api'] +", 是否确定反馈?",
-                        okText:'保存',
-                        cancelText: "取消",
+                        title: "TIP",
+                        content: "The feedback API is:<br/><b>"+ item['api'] +"</b>,<br/>continue this operation?",
+                        okText:'OK',
+                        cancelText: "CANCEL",
                         onOk: () => {
                             $.ajax({
                                 dataType:'json',
@@ -334,7 +209,7 @@
                                     console.log('feedback result');
                                     console.log(typeof result);
                                     console.log(result); 
-                                    var message = {cmd:"alert", info:"反馈成功"};
+                                    var message = {cmd:"alert", info:"feedback successfully"};
                                     vscode.postMessage(message);
                                 }
                             });
@@ -351,12 +226,6 @@
                 }
             },
             created() {
-                //this.handleData();
-                console.log("created() method is called.")
-                // window.addEventListener('message',function(event) {
-                //     const message = event.data;
-                //     console.log('event.data =>' , event.data);
-                // });
                 this.cur_index = 1;
                 this.socketData = testData.codeRecommedation;
                 this.dataCount = testData.codeRecommedation.length;

@@ -75,22 +75,26 @@ module.exports = function(context) {
             password: false, // 输入内容是否是密码
             ignoreFocusOut: true, // 默认false，设置为true时鼠标点击别的地方输入框不会消失
             placeHolder: 'Please Input your Query...', // 在输入框内的提示信息
-            prompt: 'code recommendation', // 在输入框下方的提示信息
+            prompt: 'code recommendation query', // 在输入框下方的提示信息
             //validateInput:function(text){return text;} // 对输入内容进行验证并返回
         }).then(function(msg) {
-            // msg 就是输入框输入的值
+
+            if(msg == undefined || msg == "") {
+                return;
+            }
+
+            // msg is the value from input box.
             const panel = vscode.window.createWebviewPanel(
-                'testWebview', // viewType
-                "Query", // 视图标题
+                'ApiQueryWebview', // viewType
+                "Query Panel", // 视图标题
                 vscode.ViewColumn.One, // 显示在编辑器的哪个部位,即第几个窗口
                 {
                     enableScripts: true, // 启用JS，默认禁用
                     retainContextWhenHidden: true, // webview被隐藏时保持状态，避免被重置
                 }
             );
-            let global = {panel};
-            
-            
+
+            let global = {panel};            
             panel.webview.html = getWebViewContent(context, 'src/view/query.html');
             // 往query页面传值
             panel.webview.postMessage(msg);
@@ -98,7 +102,7 @@ module.exports = function(context) {
                 if(messageHandler[message.cmd]) {
                     messageHandler[message.cmd](global,message);
                 } else {
-                    util.showError(`未找到名为 ${message.cmd} 回调方法` )
+                    util.showError(`callback method: ${message.cmd} not found.` )
                 }
             })
         });
